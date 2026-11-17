@@ -1,120 +1,165 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NOVA AI | MESLER Technologies</title>
+
 <style>
-*{box-sizing:border-box}
-body{
- margin:0;
- font-family:Arial,sans-serif;
- background:#081426;
- color:white;
- min-height:100vh;
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #081426;
+  color: white;
+  min-height: 100vh;
 }
-header{
- padding:20px;
- display:flex;
- align-items:center;
- gap:12px;
- border-bottom:1px solid #263b58;
+
+header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #263b58;
 }
-.logo{
- background:#168cff;
- padding:12px 16px;
- border-radius:12px;
- font-size:25px;
- font-weight:bold;
+
+.logo {
+  background: #168cff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 25px;
+  font-weight: bold;
 }
-header h2{margin:0}
-header small{color:#8bbcff}
-main{
- max-width:700px;
- margin:65px auto;
- padding:20px;
- text-align:center;
+
+header h2 { margin: 0; }
+header small { color: #8bbcff; }
+
+main {
+  max-width: 700px;
+  margin: 65px auto;
+  padding: 20px;
+  text-align: center;
 }
-h1{font-size:35px}
-.welcome{color:#a9bed9;line-height:1.6}
-#chat{
- background:#12243c;
- border:1px solid #294463;
- border-radius:16px;
- padding:18px;
- margin-top:30px;
- min-height:150px;
- text-align:left;
+
+h1 { font-size: 35px; }
+
+.welcome {
+  color: #a9bed9;
+  line-height: 1.6;
 }
-#messages{min-height:70px}
-.input-area{display:flex;gap:8px;margin-top:15px}
-input{
- flex:1;
- min-width:0;
- padding:15px;
- border:1px solid #45617f;
- border-radius:10px;
- background:#081426;
- color:white;
+
+#chat {
+  background: #12243c;
+  border: 1px solid #294463;
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 30px;
+  min-height: 150px;
+  text-align: left;
 }
-button{
- padding:14px 20px;
- border:0;
- border-radius:10px;
- background:#168cff;
- color:white;
- font-weight:bold;
+
+#messages { min-height: 70px; }
+
+.input-area {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
 }
-footer{
- text-align:center;
- color:#8ba5c5;
- padding:25px;
- font-size:12px;
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid #45617f;
+  border-radius: 10px;
+  background: #081426;
+  color: white;
+}
+
+button {
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #168cff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+footer {
+  text-align: center;
+  color: #8ba5c5;
+  padding: 25px;
+  font-size: 12px;
 }
 </style>
 </head>
+
 <body>
+
 <header>
- <div class="logo">N</div>
- <div>
-  <h2>NOVA AI</h2>
-  <small>BY MESLER TECHNOLOGIES</small>
- </div>
+  <div class="logo">N</div>
+  <div>
+    <h2>NOVA AI</h2>
+    <small>BY MESLER TECHNOLOGIES</small>
+  </div>
 </header>
+
 <main>
- <h1>Welcome to NOVA AI</h1>
- <p class="welcome">
- Your intelligent assistant. A new world of ideas,
- creativity and innovation starts here.
- </p>
- <section id="chat">
-  <div id="messages">
-   <strong>NOVA AI:</strong>
-   Hello! Welcome. How can I help you today?
-  </div>
-  <div class="input-area">
-   <input id="message" placeholder="Ask NOVA anything...">
-   <button onclick="sendMessage()">Send</button>
-  </div>
- </section>
+  <h1>Welcome to NOVA AI</h1>
+
+  <p class="welcome">
+    Your intelligent assistant. A new world of ideas,
+    creativity and innovation starts here.
+  </p>
+
+  <section id="chat">
+    <div id="messages">
+      <strong>NOVA AI:</strong>
+      Hello! Welcome. How can I help you today?
+    </div>
+
+    <div class="input-area">
+      <input id="message" placeholder="Ask NOVA anything...">
+      <button id="sendButton" type="button">Send</button>
+    </div>
+  </section>
 </main>
+
 <footer>
- MESLER TECHNOLOGIES<br><br>
- INNOVATION • MOBILITY • A BRIGHTER FUTURE
+  MESLER TECHNOLOGIES<br><br>
+  INNOVATION • MOBILITY • A BRIGHTER FUTURE
 </footer>
+
 <script>
-function sendMessage(){
- const input=document.getElementById("message");
- const messages=document.getElementById("messages");
- const value=input.value.trim();
- if(!value)return;
- messages.innerHTML+="<p><strong>You:</strong> "+
- value.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")+
- "</p><p><strong>NOVA AI:</strong> Thanks for your message! AI connection is coming soon.</p>";
- input.value="";
+const input = document.getElementById("message");
+const messages = document.getElementById("messages");
+const sendButton = document.getElementById("sendButton");
+
+function sendMessage() {
+  const value = input.value.trim();
+  if (!value) return;
+
+  const userText = document.createElement("p");
+  userText.textContent = "You: " + value;
+  messages.appendChild(userText);
+
+  const reply = document.createElement("p");
+  reply.textContent =
+    "NOVA AI: Your message has been received. AI connection is being restored.";
+
+  messages.appendChild(reply);
+  input.value = "";
 }
+
+sendButton.addEventListener("click", sendMessage);
+
+input.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") sendMessage();
+});
 </script>
+
 </body>
 </html>
