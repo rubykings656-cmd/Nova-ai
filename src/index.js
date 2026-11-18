@@ -3,17 +3,26 @@ export default {
   async fetch(request, env) {
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type"
     };
 
+    // Serve the NOVA AI website
+    if (request.method === "GET") {
+      return env.ASSETS.fetch(request);
+    }
+
+    // Handle browser preflight
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders
+      });
     }
 
     if (request.method !== "POST") {
       return Response.json(
-        { error: "Use POST to chat with NOVA AI." },
+        { error: "Method not allowed." },
         { status: 405, headers: corsHeaders }
       );
     }
@@ -21,10 +30,17 @@ export default {
     try {
       const { message } = await request.json();
 
-      if (!message || typeof message !== "string") {
+      if (typeof message !== "string" || !message.trim()) {
         return Response.json(
           { error: "Please enter a message." },
           { status: 400, headers: corsHeaders }
+        );
+      }
+
+      if (!env.OPENROUTER_API_KEY) {
+        return Response.json(
+          { error: "NOVA AI configuration is incomplete." },
+          { status: 500, headers: corsHeaders }
         );
       }
 
@@ -45,7 +61,10 @@ export default {
                 role: "system",
                 content: "You are NOVA AI, an intelligent assistant by MESLER Technologies. Be helpful, clear, and friendly."
               },
-              { role: "user", content: message }
+              {
+                role: "user",
+                content: message
+              }
             ]
           })
         }
@@ -56,12 +75,14 @@ export default {
       if (!response.ok) {
         return Response.json(
           { error: data.error?.message || "AI service error." },
-          { status: response.status, headers: corsHeaders }
+          { status: 502, headers: corsHeaders }
         );
       }
 
       return Response.json(
-        { reply: data.choices?.[0]?.message?.content || "No reply received." },
+        {
+          reply: data.choices?.[0]?.message?.content || "No reply received."
+        },
         { headers: corsHeaders }
       );
 
@@ -73,3 +94,4 @@ export default {
     }
   }
 };
+
