@@ -1,6 +1,5 @@
 
 
-
 export default {
   async fetch(request, env) {
     const corsHeaders = {
@@ -9,10 +8,7 @@ export default {
       "Access-Control-Allow-Headers": "Content-Type"
     };
 
-    if (request.method === "GET") {
-      return env.ASSETS.fetch(request);
-    }
-
+    // Handle browser preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -20,17 +16,23 @@ export default {
       });
     }
 
+    // Serve NOVA AI website
+    if (request.method === "GET") {
+      return env.ASSETS.fetch(request);
+    }
+
     if (request.method !== "POST") {
       return Response.json(
-        { error: "Method not allowed." },
+        { error: "Method not allowed" },
         { status: 405, headers: corsHeaders }
       );
     }
 
     try {
-      const { message } = await request.json();
+      const body = await request.json();
+      const message = body.message;
 
-      if (typeof message !== "string" || !message.trim()) {
+      if (!message || typeof message !== "string") {
         return Response.json(
           { error: "Please enter a message." },
           { status: 400, headers: corsHeaders }
@@ -39,7 +41,7 @@ export default {
 
       if (!env.OPENROUTER_API_KEY) {
         return Response.json(
-          { error: "NOVA AI configuration is incomplete." },
+          { error: "NOVA AI API key is not configured." },
           { status: 500, headers: corsHeaders }
         );
       }
@@ -52,14 +54,14 @@ export default {
             "Authorization": `Bearer ${env.OPENROUTER_API_KEY}`,
             "Content-Type": "application/json",
             "HTTP-Referer": "https://nova-ai.rubykings656.workers.dev",
-            "X-Title": "NOVA AI by MESLER Technologies"
+            "X-Title": "NOVA AI"
           },
           body: JSON.stringify({
             model: "openai/gpt-4o-mini",
             messages: [
               {
                 role: "system",
-                content: "You are NOVA AI, an intelligent assistant by MESLER Technologies. Be helpful, clear, and friendly."
+                content: "You are NOVA AI, a helpful, friendly and intelligent assistant created by MESLER TECHNOLOGIES."
               },
               {
                 role: "user",
@@ -71,35 +73,47 @@ export default {
       );
 
       const responseText = await response.text();
+
       let data;
 
       try {
         data = JSON.parse(responseText);
       } catch {
+        console.error("Invalid OpenRouter response:", responseText);
+
         return Response.json(
           { error: "The AI service returned an invalid response. Please try again." },
           { status: 502, headers: corsHeaders }
         );
       }
 
-      console.log("OpenRouter status:", response.status);
-
       if (!response.ok) {
+        console.error("OpenRouter error:", data);
+
         return Response.json(
-          { error: data.error?.message || "AI service error." },
+          {
+            error: data.error?.message || "The AI service is temporarily unavailable."
+          },
+          { status: response.status, headers: corsHeaders }
+        );
+      }
+
+      const reply = data.choices?.[0]?.message?.content;
+
+      if (!reply) {
+        return Response.json(
+          { error: "NOVA AI received an empty reply. Please try again." },
           { status: 502, headers: corsHeaders }
         );
       }
 
       return Response.json(
-        {
-          reply: data.choices?.[0]?.message?.content || "No reply received."
-        },
-        { headers: corsHeaders }
+        { reply },
+        { status: 200, headers: corsHeaders }
       );
 
     } catch (error) {
-      console.log("NOVA Worker error:", error.message);
+      console.error("NOVA Worker error:", error);
 
       return Response.json(
         { error: "NOVA AI could not process your message." },
