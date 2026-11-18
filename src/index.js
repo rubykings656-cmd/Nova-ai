@@ -1,4 +1,6 @@
 
+
+
 export default {
   async fetch(request, env) {
     const corsHeaders = {
@@ -7,12 +9,10 @@ export default {
       "Access-Control-Allow-Headers": "Content-Type"
     };
 
-    // Serve the NOVA AI website
     if (request.method === "GET") {
       return env.ASSETS.fetch(request);
     }
 
-    // Handle browser preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -69,10 +69,20 @@ export default {
           })
         }
       );
-const data = await response.json();
 
-console.log("OpenRouter status:", response.status);
-      
+      const responseText = await response.text();
+      let data;
+
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        return Response.json(
+          { error: "The AI service returned an invalid response. Please try again." },
+          { status: 502, headers: corsHeaders }
+        );
+      }
+
+      console.log("OpenRouter status:", response.status);
 
       if (!response.ok) {
         return Response.json(
@@ -89,6 +99,8 @@ console.log("OpenRouter status:", response.status);
       );
 
     } catch (error) {
+      console.log("NOVA Worker error:", error.message);
+
       return Response.json(
         { error: "NOVA AI could not process your message." },
         { status: 500, headers: corsHeaders }
@@ -96,4 +108,3 @@ console.log("OpenRouter status:", response.status);
     }
   }
 };
-
