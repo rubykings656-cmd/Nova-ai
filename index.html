@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,9 +89,7 @@ button {
   cursor: pointer;
 }
 
-button:disabled {
-  opacity: 0.6;
-}
+button:disabled { opacity: 0.6; }
 
 footer {
   text-align: center;
@@ -144,7 +143,8 @@ const sendButton = document.getElementById("sendButton");
 
 async function sendMessage() {
   const value = input.value.trim();
-  if (!value) return;
+
+  if (!value || sendButton.disabled) return;
 
   const userText = document.createElement("p");
   userText.textContent = "You: " + value;
@@ -168,21 +168,37 @@ async function sendMessage() {
       }
     );
 
-    const data = await response.json();
+    const responseText = await response.text();
+
+    let data;
+
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      throw new Error(
+        "Server returned an empty or invalid response. HTTP status: " +
+        response.status
+      );
+    }
 
     const reply = document.createElement("p");
-    reply.textContent = "NOVA AI: " +
-      (response.ok
-        ? data.reply
-        : data.error || "AI service error.");
+
+    if (!response.ok) {
+      reply.textContent =
+        "NOVA AI Error: " +
+        (data.error || "Server error " + response.status);
+    } else if (data.reply) {
+      reply.textContent = "NOVA AI: " + data.reply;
+    } else {
+      reply.textContent =
+        "NOVA AI Error: No reply received from the AI service.";
+    }
 
     messages.appendChild(reply);
 
   } catch (error) {
     const reply = document.createElement("p");
-    reply.textContent =
-      "NOVA AI Error: " + error.message;
-
+    reply.textContent = "NOVA AI Error: " + error.message;
     messages.appendChild(reply);
 
   } finally {
