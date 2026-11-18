@@ -133,40 +133,12 @@ footer {
   INNOVATION • MOBILITY • A BRIGHTER FUTURE
 </footer>
 
+
+
 <script>
 const input = document.getElementById("message");
 const messages = document.getElementById("messages");
 const sendButton = document.getElementById("sendButton");
-
-function sendMessage() {
-  const value = input.value.trim();
-  if (!value) return;
-
-  const userText = document.createElement("p");
-  userText.textContent = "You: " + value;
-  messages.appendChild(userText);
-
-  const reply = document.createElement("p");
-  reply.textContent =
-    "NOVA AI: Your message has been received. AI connection is being restored.";
-
-  messages.appendChild(reply);
-  input.value = "";
-}
-
-sendButton.addEventListener("click", sendMessage);
-
-input.addEventListener("keydown", function(event) {
-  if (event.key === "Enter") sendMessage();
-});
-</script>
-
-</body>
-</html>
-<script>
-const input = document.getElementById("message");
-const messages = document.getElementById("messages");
-const sendButton = document.querySelector(".input-area button");
 
 async function sendMessage() {
   const value = input.value.trim();
@@ -188,7 +160,9 @@ async function sendMessage() {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ message: value })
+        body: JSON.stringify({
+          message: value
+        })
       }
     );
 
@@ -196,13 +170,17 @@ async function sendMessage() {
 
     const reply = document.createElement("p");
     reply.textContent = "NOVA AI: " +
-      (response.ok ? data.reply : data.error || "AI error.");
+      (response.ok
+        ? data.reply
+        : data.error || "AI connection error.");
 
     messages.appendChild(reply);
 
   } catch (error) {
     const reply = document.createElement("p");
-    reply.textContent = "NOVA AI: Connection error. Try again.";
+    reply.textContent =
+      "NOVA AI: Connection error. Please try again.";
+
     messages.appendChild(reply);
   }
 
@@ -210,8 +188,16 @@ async function sendMessage() {
   sendButton.textContent = "Send";
 }
 
-input.addEventListener("keydown", event => {
-  if (event.key === "Enter") sendMessage();
+sendButton.addEventListener("click", sendMessage);
+
+input.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
 });
 </script>
+
+</body>
+</html>
+
 
