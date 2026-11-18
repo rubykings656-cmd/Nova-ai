@@ -171,8 +171,10 @@ async function sendMessage() {
     const reply = document.createElement("p");
     reply.textContent = "NOVA AI: " +
       (response.ok
-        ? data.reply
-        : data.error || "AI connection error.");
+      } catch (error) {
+  const reply = document.createElement("p");
+  reply.textContent =
+    "NOVA AI: Connection error. Please try again.";  
 
     messages.appendChild(reply);
 
