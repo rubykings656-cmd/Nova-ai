@@ -69,8 +69,10 @@ export default {
           })
         }
       );
+const data = await response.json();
 
-      const data = await response.json();
+console.log("OpenRouter status:", response.status);
+      
 
       if (!response.ok) {
         return Response.json(
