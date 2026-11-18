@@ -1,0 +1,29 @@
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+
+    // Serve website files
+    if (request.method === "GET") {
+      return env.ASSETS.fetch(request);
+    }
+
+    // Handle API requests
+    if (url.pathname === "/api/chat" && request.method === "POST") {
+      return new Response(
+        JSON.stringify({
+          reply: "Hello! NOVA AI is online."
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+    }
+
+    return new Response("NOVA AI is running!", {
+      status: 200
+    });
+  }
+};
