@@ -88,6 +88,10 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  opacity: 0.6;
+}
+
 footer {
   text-align: center;
   color: #8ba5c5;
@@ -133,8 +137,6 @@ footer {
   INNOVATION • MOBILITY • A BRIGHTER FUTURE
 </footer>
 
-
-
 <script>
 const input = document.getElementById("message");
 const messages = document.getElementById("messages");
@@ -171,22 +173,22 @@ async function sendMessage() {
     const reply = document.createElement("p");
     reply.textContent = "NOVA AI: " +
       (response.ok
-      } catch (error) {
-  const reply = document.createElement("p");
-  reply.textContent =;  
+        ? data.reply
+        : data.error || "AI service error.");
 
     messages.appendChild(reply);
 
   } catch (error) {
     const reply = document.createElement("p");
     reply.textContent =
-      "NOVA AI: Connection error. Please try again.";
+      "NOVA AI Error: " + error.message;
 
     messages.appendChild(reply);
-  }
 
-  sendButton.disabled = false;
-  sendButton.textContent = "Send";
+  } finally {
+    sendButton.disabled = false;
+    sendButton.textContent = "Send";
+  }
 }
 
 sendButton.addEventListener("click", sendMessage);
@@ -200,5 +202,3 @@ input.addEventListener("keydown", function(event) {
 
 </body>
 </html>
-
-
