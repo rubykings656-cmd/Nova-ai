@@ -1,19 +1,21 @@
 
-
 const sendButton = document.querySelector("button");
 const input = document.querySelector("input");
 
 async function sendMessage() {
   const message = input.value.trim();
 
-  if (!message) return;
+  if (!message) {
+    alert("Please enter a message first.");
+    return;
+  }
 
   sendButton.disabled = true;
   sendButton.textContent = "Thinking...";
 
   try {
     const response = await fetch(
-      "https://nova.arubykings656.workers.dev",
+      "https://nova-ai.rubykings656.workers.dev",
       {
         method: "POST",
         headers: {
@@ -23,18 +25,35 @@ async function sendMessage() {
       }
     );
 
-    if (!response.ok) {
-      throw new Error("Server error: " + response.status);
+    const responseText = await response.text();
+
+    let data;
+
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      throw new Error("NOVA returned an invalid response.");
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Server error: " + response.status
+      );
+    }
 
-    alert("NOVA AI: " + (data.reply || data.message || "No response received."));
+    const reply = data.reply;
+
+    if (!reply) {
+      throw new Error("NOVA did not return a reply.");
+    }
+
+    alert("NOVA AI: " + reply);
     input.value = "";
 
   } catch (error) {
-    alert("NOVA AI connection error. Please try again.");
-    console.error(error);
+    alert("NOVA AI Error: " + error.message);
+    console.error("NOVA AI error:", error);
+
   } finally {
     sendButton.disabled = false;
     sendButton.textContent = "Send";
