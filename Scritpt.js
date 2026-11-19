@@ -1,6 +1,8 @@
 
-const sendButton = document.querySelector("button");
-const input = document.querySelector("input");
+
+const sendButton = document.getElementById("sendButton");
+const input = document.getElementById("messageInput");
+const messages = document.getElementById("messages");
 
 async function sendMessage() {
   const message = input.value.trim();
@@ -25,34 +27,29 @@ async function sendMessage() {
       }
     );
 
-    const responseText = await response.text();
-
-    let data;
-
-    try {
-      data = JSON.parse(responseText);
-    } catch {
-      throw new Error("NOVA returned an invalid response.");
-    }
+    const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        data.error || "Server error: " + response.status
-      );
+      throw new Error(data.error || "Server error: " + response.status);
     }
 
-    const reply = data.reply;
-
-    if (!reply) {
+    if (!data.reply) {
       throw new Error("NOVA did not return a reply.");
     }
 
-    alert("NOVA AI: " + reply);
+    const userMessage = document.createElement("p");
+    userMessage.textContent = "You: " + message;
+    messages.appendChild(userMessage);
+
+    const novaMessage = document.createElement("p");
+    novaMessage.textContent = "NOVA AI: " + data.reply;
+    messages.appendChild(novaMessage);
+
     input.value = "";
 
   } catch (error) {
     alert("NOVA AI Error: " + error.message);
-    console.error("NOVA AI error:", error);
+    console.error(error);
 
   } finally {
     sendButton.disabled = false;
@@ -61,3 +58,9 @@ async function sendMessage() {
 }
 
 sendButton.addEventListener("click", sendMessage);
+
+input.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+});
