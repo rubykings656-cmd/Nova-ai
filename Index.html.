@@ -1,5 +1,4 @@
-# Nova-ai
-NOVA AI – An intelligent assistant by MESLER Technologies.
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,14 +6,28 @@ NOVA AI – An intelligent assistant by MESLER Technologies.
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NOVA AI | MESLER Technologies</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="Style.css">
 </head>
 <body>
   <header>
     <h1>NOVA AI</h1>
     <p>Intelligence for a brighter future.</p>
     <p>By MESLER Technologies</p>
-    <button>Start a Conversation</button>
   </header>
+
+  <main>
+    <section id="chat">
+      <div id="messages">
+        <p><strong>NOVA AI:</strong> Hello! Welcome. How can I help you today?</p>
+      </div>
+
+      <input id="messageInput" type="text"
+        placeholder="Ask NOVA anything...">
+
+      <button id="sendButton" type="button">Send</button>
+    </section>
+  </main>
+
+  <script src="Scritpt.js"></script>
 </body>
 </html>
